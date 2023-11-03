@@ -2,7 +2,7 @@ provider "aws"{
  region = "us-east-2"
 }
 
-# Lambda for Fetching Data
+/* Lambda for Fetching Data
 resource "aws_lambda_function" "fetch_data" {
   filename      = "./lambda_function.zip"
   function_name = "FetchDataFunction"
@@ -11,6 +11,7 @@ resource "aws_lambda_function" "fetch_data" {
   runtime       = "python3.8"
   source_code_hash = filebase64sha256("./lambda_function.zip")
 }
+*/
 
 # Lambda for Data Preprocessing
 resource "aws_lambda_function" "data_preprocessing" {
