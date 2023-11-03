@@ -2,7 +2,7 @@ provider "aws"{
  region = "us-east-2"
 }
 
-/* Lambda for Fetching Data
+# Lambda for Fetching Data
 resource "aws_lambda_function" "fetch_data" {
   filename      = "./lambda_function.zip"
   function_name = "FetchDataFunction"
@@ -11,7 +11,7 @@ resource "aws_lambda_function" "fetch_data" {
   runtime       = "python3.8"
   source_code_hash = filebase64sha256("./lambda_function.zip")
 }
-*/
+
 
 # Lambda for Data Preprocessing
 resource "aws_lambda_function" "data_preprocessing" {
@@ -20,7 +20,7 @@ resource "aws_lambda_function" "data_preprocessing" {
   role          = aws_iam_role.lambda_exec.arn
   handler       = "lambda_function.lambda_handler"
   runtime       = "python3.8"
-  source_code_hash = filebase64sha256("./data_preprocessing.py.zip")
+  source_code_hash = filebase64sha256("./data_preprocessing.py")
 }
 
 resource "aws_iam_role" "lambda_exec" {
@@ -89,15 +89,13 @@ resource "aws_iam_role_policy_attachment" "ec2_s3_policy_attachment" {
 }
 
 resource "aws_instance" "uniview_project" {
-  ami           = "ami-01f48e1e4b60cb973" # Replace with your AMI ID
-  instance_type = "t2.micro" 
-
-  key_name               = "MZ_AWS_KEY.pem" 
+  ami           = "ami-0dfcb18f8e21ce1b4" # Replace with your AMI ID
+  instance_type = "t2.micro"  
   security_groups        = [aws_security_group.uniview_project_sg.name]
   iam_instance_profile   = aws_iam_instance_profile.ec2_s3_profile.name
   user_data = file("user_data_script.sh")
 
-  tags = {
+  tags = { 
     Name = "Uniview-project"
   }
 }
