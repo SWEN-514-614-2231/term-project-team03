@@ -6,6 +6,9 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 comprehend = boto3.client('comprehend', region_name='us-east-2')
 s3_client = boto3.client('s3', region_name='us-east-2')
 
+preprocessed_data_bucket = 'uniview-preprocessed-data'
+analyzed_data_bucket = 'uniview-analyzed-data'
+
 def get_file_from_s3(bucket_name, key):
     object_content = s3_client.get_object(Bucket=bucket_name, Key=key)['Body'].read().decode('utf-8')
     return json.loads(object_content)
@@ -27,18 +30,16 @@ def extract_keywords(texts, n=5):
         keywords.append(top_keywords)
     return keywords
 
-bucket_name = 'places-reviews-uniview'
-
-# Fetch cleaned data from S3 with prefix "cleaned_"
-cleaned_files = s3_client.list_objects_v2(Bucket=bucket_name, Prefix='cleaned_')['Contents']
+# Fetch cleaned data from the Preprocessed Data Bucket
+cleaned_files = s3_client.list_objects_v2(Bucket=preprocessed_data_bucket, Prefix='cleaned_')['Contents']
 for file in cleaned_files:
     data_key = file['Key']
     
     # Skip files that have already been analyzed
-    if "analyzed" in data_key or "clean_analyzed" in data_key:
+    if "analyzed" in data_key:
         continue
     
-    reviews = get_file_from_s3(bucket_name, data_key)
+    reviews = get_file_from_s3(preprocessed_data_bucket, data_key)
     analyzed_reviews = []
 
     # Perform sentiment analysis and keyword extraction
@@ -50,6 +51,6 @@ for file in cleaned_files:
         }
         analyzed_reviews.append(analyzed_review)
 
-    # Save results back to S3 with a prefix "analyzed_"
+    # Save results back to the Analyzed Data Bucket
     output_key = 'analyzed_' + data_key.split('/')[-1]
-    save_to_s3(bucket_name, output_key, analyzed_reviews)
+    save_to_s3(analyzed_data_bucket, output_key, analyzed_reviews)
