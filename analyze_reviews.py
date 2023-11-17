@@ -44,6 +44,8 @@ for file in cleaned_files:
 
     # Perform sentiment analysis and keyword extraction
     for review_text in reviews:
+        if not review_text.strip():
+            continue
         analyzed_review = {
             'text': review_text,
             'sentiment': analyze_sentiment(review_text),
