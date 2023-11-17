@@ -4,7 +4,7 @@ import boto3
 
 s3_client = boto3.client('s3')
 bucket_name = 'places-reviews-uniview'
-
+bucket_name2 = 'places-reviews-uniview2'
 def get_data_from_s3(key):
     response = s3_client.get_object(Bucket=bucket_name, Key=key)
     data = json.loads(response['Body'].read().decode('utf-8'))
@@ -38,7 +38,7 @@ def lambda_handler(event, context):
         all_cleaned_reviews.extend(cleaned_reviews)
         
         # Optional: Store cleaned reviews back in S3 or any other destination
-        s3_client.put_object(Bucket=bucket_name, Key=f"cleaned_{s3_key}", Body=json.dumps(cleaned_reviews))
+        s3_client.put_object(Bucket=bucket_name2, Key=f"cleaned_{s3_key}", Body=json.dumps(cleaned_reviews))
     
     return {
         'statusCode': 200,

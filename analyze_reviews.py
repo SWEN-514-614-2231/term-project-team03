@@ -27,7 +27,8 @@ def extract_keywords(texts, n=5):
         keywords.append(top_keywords)
     return keywords
 
-bucket_name = 'places-reviews-uniview'
+bucket_name = 'places-reviews-uniview2'
+bucket_name2 = 'places-reviews-uniview3'
 
 # Fetch cleaned data from S3 with prefix "cleaned_"
 cleaned_files = s3_client.list_objects_v2(Bucket=bucket_name, Prefix='cleaned_')['Contents']
@@ -52,4 +53,4 @@ for file in cleaned_files:
 
     # Save results back to S3 with a prefix "analyzed_"
     output_key = 'analyzed_' + data_key.split('/')[-1]
-    save_to_s3(bucket_name, output_key, analyzed_reviews)
+    save_to_s3(bucket_name2, output_key, analyzed_reviews)

@@ -79,7 +79,7 @@ resource "aws_iam_role" "ec2_s3_role" {
 }
 
 resource "aws_iam_instance_profile" "ec2_s3_profile" {
-  name = "EC2S3InstanceProfile"
+  name = "EC2S3InstanceProfile1"
   role = aws_iam_role.ec2_s3_role.name
 }
 
@@ -98,5 +98,30 @@ resource "aws_instance" "uniview_project" {
   tags = { 
     Name = "Uniview-project"
   }
+
+  provisioner "file" {
+    source      = "./analyze_reviews.py"  # Replace with the path to your local Python script
+    destination = "/home/ec2-user/analyze_reviews.py"  # Destination path on the EC2 instance
+  }
+  provisioner "remote-exec" {
+    inline = [
+      "sudo yum -y install python3",  # Install Python 3
+      "curl -O https://bootstrap.pypa.io/get-pip.py",  # Download pip installer
+      "sudo python3 get-pip.py",  # Install pip
+      "sudo pip3 install boto3",  # Install any required Python packages (e.g., boto3)
+      "python3 /home/ec2-user/your_python_script.py"  # Run your Python script
+    ]
+    }
 }
 
+
+resource "aws_secretsmanager_secret" "Places_API" {
+  name = "Places_API"  # Replace with a unique name for your secret
+}
+
+resource "aws_secretsmanager_secret_version" "uniview_google_api_version" {
+  secret_id     = aws_secretsmanager_secret.Places_API.id
+  secret_string = jsonencode({
+    secret_key = "AIzaSyCRLFTtqkYmQf6rj21Xv95lHOBfnjxwBcY"
+  })
+}
