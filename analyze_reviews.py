@@ -17,7 +17,8 @@ def save_to_s3(bucket_name, key, content):
     s3_client.put_object(Bucket=bucket_name, Key=key, Body=json.dumps(content))
 
 def analyze_sentiment(text):
-    return comprehend.detect_sentiment(Text=text, LanguageCode='en')['Sentiment']
+    response = comprehend.detect_sentiment(Text=text, LanguageCode='en')
+    return response['Sentiment'], response['SentimentScore']
 
 def extract_keywords(texts, n=5):
     vectorizer = TfidfVectorizer(max_df=1.0, stop_words='english', max_features=10000)
@@ -42,14 +43,20 @@ for file in cleaned_files:
     reviews = get_file_from_s3(preprocessed_data_bucket, data_key)
     analyzed_reviews = []
 
-    # Perform sentiment analysis and keyword extraction
+    # Perform sentiment analysis and keyword extraction    
     for review_text in reviews:
         if not review_text.strip():
             continue
+        sentiment, sentiment_score = analyze_sentiment(review_text)
+        keywords = extract_keywords([review_text])
+
         analyzed_review = {
             'text': review_text,
-            'sentiment': analyze_sentiment(review_text),
-            'keywords': extract_keywords([review_text])
+            'sentiment': sentiment,
+            'sentiment_score': sentiment_score,
+            'keywords': keywords,
+            'positive_keywords': [] if sentiment != 'POSITIVE' else keywords,
+            'negative_keywords': [] if sentiment != 'NEGATIVE' else keywords
         }
         analyzed_reviews.append(analyzed_review)
 
