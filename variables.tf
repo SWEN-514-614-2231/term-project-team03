@@ -1,15 +1,24 @@
 variable "region" {
-  description = "The AWS region"
+  description = "AWS region"
   default     = "us-east-2"
 }
 
 variable "ami_id" {
-  description = "The ID of the AMI to use for the EC2 instance"
-  default     = "ami-01f48e1e4b60cb973"  # Replace with your AMI ID
+  description = "AMI ID for EC2 instance"
+  type        = string
 }
 
-variable "instance_type" {
-  description = "EC2 instance type"
-  default     = "t2.micro"
+variable "github_oauth_token" {
+  description = "GitHub OAuth token for AWS Amplify"
+  type        = string
 }
 
+variable "github_repo_url" {
+  description = "URL of the GitHub repository for AWS Amplify"
+  type        = string
+}
+
+variable "key_name" {
+  description = "Key name for EC2 instance"
+  type  =string
+}
