@@ -1,0 +1,5 @@
+region              = "us-east-2"
+ami_id              = "ami-03d6568751fb7fbc5" 
+github_oauth_token  = "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"
+github_repo_url     = "git@github.com:Avinash-Amudala/amplify-swen614.git"
+key_name            = "Your_identity_key"
